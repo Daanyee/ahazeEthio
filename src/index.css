@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+@theme {
+    --color-brand-blue: #0070BB;
+    --color-brand-violet: #8000FF;
+}
+
+@layer base {
+    body {
+        @apply bg-white text-brand-blue font-sans antialiased;
+    }
+}
+
+@layer components {
+    .btn-primary {
+        @apply bg-brand-violet text-white px-6 py-2 rounded-lg font-semibold hover:opacity-90 active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+    }
+
+    .input-field {
+        @apply w-full px-4 py-2 border-2 border-brand-blue/20 rounded-lg focus:border-brand-blue outline-none transition-colors;
+    }
+
+    .card {
+        @apply bg-white border border-brand-blue/10 rounded-xl shadow-sm overflow-hidden;
+    }
+}
+
+/* Custom scrollbar to match theme */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    @apply bg-white;
+}
+
+::-webkit-scrollbar-thumb {
+    @apply bg-brand-violet/20 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    @apply bg-brand-violet/40;
+}

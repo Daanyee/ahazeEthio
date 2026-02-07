@@ -72,7 +72,9 @@ const Dashboard = () => {
                 profiles:author_id (first_name, father_name),
                 organizations:org_id (full_name),
                 jobs (*),
-                events (*)
+                events (*),
+                products (*),
+                rentals (*)
             `)
             .order('created_at', { ascending: false });
 
@@ -229,6 +231,35 @@ const Dashboard = () => {
                                                 <div className="px-4 py-1.5 bg-brand-violet text-white rounded-xl text-xs font-black uppercase tracking-widest">
                                                     {post.events.entry_requirement}
                                                 </div>
+                                            </div>
+                                        )}
+
+                                        {post.post_type === 'product' && post.products && (
+                                            <div className="p-4 bg-green-50 rounded-2xl border border-green-100 flex items-center justify-between">
+                                                <div>
+                                                    <p className="text-[10px] uppercase font-black text-green-600/60 tracking-widest">Price</p>
+                                                    <p className="font-bold text-green-700">{post.products.price} ETB</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-[10px] uppercase font-black text-green-600/60 tracking-widest">Stock</p>
+                                                    <p className="font-bold text-green-700">{post.products.stock_count} Available</p>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {post.post_type === 'rent' && post.rentals && (
+                                            <div className="p-4 bg-orange-50 rounded-2xl border border-orange-100 flex items-center justify-between">
+                                                <div>
+                                                    <p className="text-[10px] uppercase font-black text-orange-600/60 tracking-widest">Rate</p>
+                                                    <p className="font-bold text-orange-700">{post.rentals.price_per_unit} ETB / {post.rentals.unit_type}</p>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {post.post_type === 'live' && (
+                                            <div className="mt-2 inline-flex items-center px-4 py-2 bg-red-500 text-white rounded-full text-xs font-black uppercase tracking-widest animate-pulse">
+                                                <div className="w-2 h-2 bg-white rounded-full mr-2"></div>
+                                                LIVE NOW
                                             </div>
                                         )}
                                     </div>

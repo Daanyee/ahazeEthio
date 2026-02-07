@@ -15,6 +15,60 @@ const CreatePostModal = ({ isOpen, onClose, user, onPostCreated }) => {
         region: user?.region || '',
         zone: user?.zone || '',
     });
+    const [extraDetails, setExtraDetails] = useState({});
+
+    // Field definitions for different post types
+    const renderExtraFields = () => {
+        switch (postType) {
+            case 'job':
+                return (
+                    <div className="space-y-4 bg-gray-50 p-4 rounded-2xl border border-brand-blue/5">
+                        <Input label="Job Title" value={extraDetails.job_name || ''} onChange={e => setExtraDetails({ ...extraDetails, job_name: e.target.value })} required placeholder="e.g. Senior Carpenter" />
+                        <div className="grid grid-cols-2 gap-4">
+                            <Input label="Payment (ETB)" type="number" value={extraDetails.payment_amount || ''} onChange={e => setExtraDetails({ ...extraDetails, payment_amount: e.target.value })} required />
+                            <Input label="Workers Needed" type="number" value={extraDetails.workers_needed || '1'} onChange={e => setExtraDetails({ ...extraDetails, workers_needed: e.target.value })} required />
+                        </div>
+                    </div>
+                );
+            case 'event':
+                return (
+                    <div className="space-y-4 bg-gray-50 p-4 rounded-2xl border border-brand-blue/5">
+                        <Input label="Event Name" value={extraDetails.event_name || ''} onChange={e => setExtraDetails({ ...extraDetails, event_name: e.target.value })} required placeholder="e.g. Community Gathering" />
+                        <div className="grid grid-cols-2 gap-4">
+                            <Input label="Start Time" type="datetime-local" value={extraDetails.start_time || ''} onChange={e => setExtraDetails({ ...extraDetails, start_time: e.target.value })} required />
+                            <Input label="Entry (Free/Paid)" value={extraDetails.entry_requirement || 'Free'} onChange={e => setExtraDetails({ ...extraDetails, entry_requirement: e.target.value })} />
+                        </div>
+                    </div>
+                );
+            case 'product':
+                return (
+                    <div className="space-y-4 bg-gray-50 p-4 rounded-2xl border border-brand-blue/5">
+                        <Input label="Product Name" value={extraDetails.name || ''} onChange={e => setExtraDetails({ ...extraDetails, name: e.target.value })} required placeholder="e.g. Handmade Scarf" />
+                        <div className="grid grid-cols-2 gap-4">
+                            <Input label="Price (ETB)" type="number" value={extraDetails.price || ''} onChange={e => setExtraDetails({ ...extraDetails, price: e.target.value })} required />
+                            <Input label="Stock" type="number" value={extraDetails.stock_count || '1'} onChange={e => setExtraDetails({ ...extraDetails, stock_count: e.target.value })} required />
+                        </div>
+                    </div>
+                );
+            case 'rent':
+                return (
+                    <div className="space-y-4 bg-gray-50 p-4 rounded-2xl border border-brand-blue/5">
+                        <Input label="Item Name" value={extraDetails.item_name || ''} onChange={e => setExtraDetails({ ...extraDetails, item_name: e.target.value })} required placeholder="e.g. SUV Car" />
+                        <div className="grid grid-cols-2 gap-4">
+                            <Input label="Price Rate (ETB)" type="number" value={extraDetails.price_per_unit || ''} onChange={e => setExtraDetails({ ...extraDetails, price_per_unit: e.target.value })} required />
+                            <Select
+                                label="Unit"
+                                value={extraDetails.unit_type || 'day'}
+                                options={[{ label: 'Hour', value: 'hour' }, { label: 'Day', value: 'day' }, { label: 'Month', value: 'month' }]}
+                                onChange={e => setExtraDetails({ ...extraDetails, unit_type: e.target.value })}
+                            />
+                        </div>
+                    </div>
+                );
+            default:
+                return null;
+        }
+    };
 
     if (!isOpen) return null;
 
@@ -41,6 +95,53 @@ const CreatePostModal = ({ isOpen, onClose, user, onPostCreated }) => {
 
             if (postError) throw postError;
 
+            const postId = data.id;
+
+            // Handle specific inserts based on type
+            if (postType === 'job') {
+                const { error: jobError } = await supabase.from('jobs').insert({
+                    post_id: postId,
+                    job_name: extraDetails.job_name,
+                    description: content,
+                    payment_amount: extraDetails.payment_amount,
+                    workers_needed: extraDetails.workers_needed,
+                    // defaults
+                    job_type: 'Contract',
+                });
+                if (jobError) throw jobError;
+            } else if (postType === 'event') {
+                const { error: eventError } = await supabase.from('events').insert({
+                    post_id: postId,
+                    event_name: extraDetails.event_name,
+                    start_time: extraDetails.start_time,
+                    end_time: extraDetails.start_time, // simplifying for now
+                    entry_requirement: extraDetails.entry_requirement,
+                    purpose: content
+                });
+                if (eventError) throw eventError;
+            } else if (postType === 'product') {
+                const { error: prodError } = await supabase.from('products').insert({
+                    post_id: postId,
+                    owner_id: session.user.id,
+                    name: extraDetails.name,
+                    price: extraDetails.price,
+                    stock_count: extraDetails.stock_count,
+                    description: content,
+                    media_urls: mediaUrls
+                });
+                if (prodError) throw prodError;
+            } else if (postType === 'rent') {
+                const { error: rentError } = await supabase.from('rentals').insert({
+                    post_id: postId,
+                    owner_id: session.user.id,
+                    item_name: extraDetails.item_name,
+                    price_per_unit: extraDetails.price_per_unit,
+                    unit_type: extraDetails.unit_type,
+                    media_urls: mediaUrls
+                });
+                if (rentError) throw rentError;
+            }
+
             onPostCreated(data);
             onClose();
             setContent('');
@@ -57,7 +158,7 @@ const CreatePostModal = ({ isOpen, onClose, user, onPostCreated }) => {
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-blue/20 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-blue/20 backdrop-blur-sm animate-in fade-in duration-200" >
             <div className="bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden border border-brand-blue/5 animate-in zoom-in-95 duration-200">
                 <div className="p-6 border-b border-brand-blue/5 flex items-center justify-between bg-gray-50/50">
                     <h2 className="text-xl font-black text-brand-blue flex items-center space-x-2">
@@ -94,6 +195,10 @@ const CreatePostModal = ({ isOpen, onClose, user, onPostCreated }) => {
                         ))}
                     </div>
 
+
+
+                    {renderExtraFields()}
+
                     <textarea
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
@@ -128,8 +233,8 @@ const CreatePostModal = ({ isOpen, onClose, user, onPostCreated }) => {
                         </Button>
                     </div>
                 </form>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 };
 

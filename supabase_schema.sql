@@ -1,3 +1,4 @@
+
 -- Core Profiles Table (Section [1])
 CREATE TABLE profiles (
   id UUID REFERENCES auth.users ON DELETE CASCADE PRIMARY KEY,
@@ -47,7 +48,7 @@ CREATE TABLE organizations (
 -- Posts Table (Section [3.1])
 CREATE TABLE posts (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  author_id UUID REFERENCES profiles(id),
+  author_id UUID REFERENCES profiles(id), -- Added missing link to author
   org_id UUID REFERENCES organizations(id),
   content_text TEXT,
   media_urls TEXT[],
@@ -87,6 +88,7 @@ CREATE TABLE events (
 -- Products/Shelf Table (Section [3.4])
 CREATE TABLE products (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  post_id UUID REFERENCES posts(id) ON DELETE CASCADE, -- Linked to post
   owner_id UUID REFERENCES profiles(id),
   org_id UUID REFERENCES organizations(id),
   category TEXT,
@@ -102,6 +104,7 @@ CREATE TABLE products (
 -- Rentals Table (Section [3.6])
 CREATE TABLE rentals (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  post_id UUID REFERENCES posts(id) ON DELETE CASCADE, -- Linked to post
   owner_id UUID REFERENCES profiles(id),
   org_id UUID REFERENCES organizations(id),
   category TEXT,
@@ -157,3 +160,5 @@ CREATE POLICY "Authenticated users can create events" ON events FOR INSERT WITH 
 CREATE POLICY "Products are viewable by everyone" ON products FOR SELECT USING (true);
 CREATE POLICY "Authenticated users can create products" ON products FOR INSERT WITH CHECK (auth.role() = 'authenticated');
 
+CREATE POLICY "Rentals are viewable by everyone" ON rentals FOR SELECT USING (true);
+CREATE POLICY "Authenticated users can create rentals" ON rentals FOR INSERT WITH CHECK (auth.role() = 'authenticated');

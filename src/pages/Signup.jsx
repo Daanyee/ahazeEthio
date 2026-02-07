@@ -3,11 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
 import Select from '../components/ui/Select';
-import { Camera, HelpCircle, User, MapPin, GraduationCap, Briefcase, Lock } from 'lucide-react';
+import { Camera, HelpCircle, User, MapPin, GraduationCap, Briefcase, Lock, Loader2 } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 const Signup = () => {
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
     const [formData, setFormData] = useState({
         // 1.1 Name and contact
         firstName: '',
@@ -52,9 +55,55 @@ const Signup = () => {
 
     const handleSignup = async (e) => {
         e.preventDefault();
-        console.log("Signup button clicked!");
-        console.log("Signup data:", formData);
-        // Implementation for Supabase signup...
+        setLoading(true);
+        setError(null);
+
+        if (formData.password !== formData.confirmPassword) {
+            setError("Passwords do not match");
+            setLoading(false);
+            return;
+        }
+
+        try {
+            // 1. Sign up user in Auth
+            const email = formData.emailAddress || `${formData.mobileNumber}@ahaze.ethio`;
+            const { data: authData, error: authError } = await supabase.auth.signUp({
+                email,
+                password: formData.password,
+            });
+
+            if (authError) throw authError;
+
+            // 2. Create Profile in profiles table
+            const { error: profileError } = await supabase
+                .from('profiles')
+                .insert({
+                    id: authData.user.id,
+                    first_name: formData.firstName,
+                    father_name: formData.fatherName,
+                    grand_father_name: formData.grandFatherName,
+                    mobile_number: formData.mobileNumber,
+                    email_address: formData.emailAddress,
+                    gender: formData.gender,
+                    birth_date: formData.birthDate,
+                    region: formData.region,
+                    zone: formData.zone,
+                    woreda: formData.woreda,
+                    kebele: formData.kebele,
+                    village: formData.village,
+                    education_level: formData.education,
+                });
+
+            if (profileError) throw profileError;
+
+            console.log("Signup successful!");
+            navigate('/');
+        } catch (err) {
+            setError(err.message);
+            console.error("Signup error:", err);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const InfoTooltip = ({ text }) => (
@@ -73,6 +122,13 @@ const Signup = () => {
                     <h2 className="text-3xl font-extrabold text-white">Account Opening</h2>
                     <p className="mt-2 text-white/80 font-medium">Create your profile to connect across Ethiopia</p>
                 </div>
+
+                {error && (
+                    <div className="mx-10 mt-6 p-4 bg-red-50 border-2 border-red-100 text-red-600 rounded-2xl font-bold flex items-center space-x-2 animate-in fade-in slide-in-from-top-2">
+                        <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                        <span>{error}</span>
+                    </div>
+                )}
 
                 <form onSubmit={handleSignup} className="px-10 py-10 space-y-8">
                     {/* 1.1 Name and Contact */}
@@ -248,8 +304,15 @@ const Signup = () => {
                         </div>
                     </section>
 
-                    <Button type="submit" className="w-full text-xl py-4">
-                        1.13 Signup Button
+                    <Button type="submit" className="w-full text-xl py-4" disabled={loading}>
+                        {loading ? (
+                            <div className="flex items-center space-x-2">
+                                <Loader2 className="w-6 h-6 animate-spin" />
+                                <span>Creating Account...</span>
+                            </div>
+                        ) : (
+                            "1.13 Signup Button"
+                        )}
                     </Button>
 
                     <p className="text-center text-sm font-bold text-brand-blue/60">

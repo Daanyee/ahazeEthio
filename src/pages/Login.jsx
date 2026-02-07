@@ -2,10 +2,13 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
-import { LogIn, Smartphone, Mail } from 'lucide-react';
+import { LogIn, Smartphone, Mail, Loader2 } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 const Login = () => {
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
     const [formData, setFormData] = useState({
         identifier: '',
         password: ''
@@ -18,8 +21,28 @@ const Login = () => {
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        console.log("Login button clicked!");
-        console.log("Login data:", formData);
+        setLoading(true);
+        setError(null);
+
+        try {
+            const isEmail = formData.identifier.includes('@');
+            const email = isEmail ? formData.identifier : `${formData.identifier}@ahaze.ethio`;
+
+            const { data, error: authError } = await supabase.auth.signInWithPassword({
+                email,
+                password: formData.password,
+            });
+
+            if (authError) throw authError;
+
+            console.log("Login successful!");
+            navigate('/');
+        } catch (err) {
+            setError(err.message);
+            console.error("Login error:", err);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -29,6 +52,12 @@ const Login = () => {
                     <h2 className="text-4xl font-black text-white tracking-tight">Ahaze</h2>
                     <p className="mt-2 text-white/80 font-bold uppercase tracking-widest text-xs">Connecting Ethiopia</p>
                 </div>
+
+                {error && (
+                    <div className="mx-8 mt-6 p-4 bg-red-50 border-2 border-red-100 text-red-600 rounded-2xl font-bold text-sm">
+                        {error}
+                    </div>
+                )}
 
                 <form onSubmit={handleLogin} className="p-8 space-y-6">
                     <div className="space-y-4">
@@ -59,9 +88,13 @@ const Login = () => {
                         <span className="text-sm font-bold text-brand-violet cursor-pointer hover:underline">Forgot password?</span>
                     </div>
 
-                    <Button type="submit" className="w-full text-lg py-3.5 flex items-center space-x-2">
-                        <LogIn className="w-5 h-5" />
-                        <span>4.3 Login Button</span>
+                    <Button type="submit" className="w-full text-lg py-3.5 flex items-center justify-center space-x-2" disabled={loading}>
+                        {loading ? (
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                        ) : (
+                            <LogIn className="w-5 h-5" />
+                        )}
+                        <span>{loading ? "Logging in..." : "4.3 Login Button"}</span>
                     </Button>
 
                     <div className="relative py-4">

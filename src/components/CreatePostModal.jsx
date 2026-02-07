@@ -46,7 +46,11 @@ const CreatePostModal = ({ isOpen, onClose, user, onPostCreated }) => {
             setContent('');
             setPostType('normal');
         } catch (err) {
-            setError(err.message);
+            if (err.message && err.message.includes('foreign key constraint')) {
+                setError("Your profile setup is incomplete. Please contact support or try updating your profile.");
+            } else {
+                setError(err.message);
+            }
         } finally {
             setLoading(false);
         }

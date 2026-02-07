@@ -3,10 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
 import Select from '../components/ui/Select';
-import { Building2, Users, MapPin, Contact, Info, Image as ImageIcon } from 'lucide-react';
+import { Building2, Users, MapPin, Contact, Info, Image as ImageIcon, Loader2 } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 const OrganizationRegistration = () => {
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
     const [formData, setFormData] = useState({
         fullName: '',
         managedBy: [],
@@ -34,10 +37,48 @@ const OrganizationRegistration = () => {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleRegister = (e) => {
+    const handleRegister = async (e) => {
         e.preventDefault();
-        console.log("Register button clicked!");
-        console.log("Organization Registration data:", formData);
+        setLoading(true);
+        setError(null);
+
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) throw new Error("You must be logged in to register an organization");
+
+            const { data, error: orgError } = await supabase
+                .from('organizations')
+                .insert({
+                    full_name: formData.fullName,
+                    managed_by: session.user.id,
+                    org_type: formData.orgType,
+                    business_type: formData.businessType,
+                    industry: formData.industry,
+                    tin_number: formData.tinNumber,
+                    established_date: formData.establishedDate || null,
+                    region: formData.region,
+                    zone: formData.zone,
+                    woreda: formData.woreda,
+                    kebele: formData.kebele,
+                    sefer: formData.sefer,
+                    building: formData.building,
+                    phone: formData.phone,
+                    email: formData.email,
+                    about: formData.about
+                })
+                .select()
+                .single();
+
+            if (orgError) throw orgError;
+
+            console.log("Organization registered successfully:", data);
+            navigate('/');
+        } catch (err) {
+            setError(err.message);
+            console.error("Registration error:", err);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -47,6 +88,13 @@ const OrganizationRegistration = () => {
                     <h2 className="text-3xl font-extrabold text-white">Organization Registration</h2>
                     <p className="mt-2 text-white/80 font-medium">Verify your organization and start connecting</p>
                 </div>
+
+                {error && (
+                    <div className="mx-10 mt-6 p-4 bg-red-50 border-2 border-red-100 text-red-600 rounded-2xl font-bold flex items-center space-x-2">
+                        <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                        <span>{error}</span>
+                    </div>
+                )}
 
                 <form onSubmit={handleRegister} className="p-10 space-y-10">
                     {/* 2.1 & 2.2 Profile Basics */}

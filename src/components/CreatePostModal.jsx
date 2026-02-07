@@ -3,7 +3,7 @@ import { X, Image as ImageIcon, Loader2, MapPin } from 'lucide-react';
 import Button from './ui/Button';
 import Input from './ui/Input';
 import Select from './ui/Select';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../lib/supabase';
 
 const CreatePostModal = ({ isOpen, onClose, user, onPostCreated }) => {
     const [loading, setLoading] = useState(false);
@@ -81,8 +81,8 @@ const CreatePostModal = ({ isOpen, onClose, user, onPostCreated }) => {
                                 type="button"
                                 onClick={() => setPostType(type)}
                                 className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap ${postType === type
-                                        ? 'bg-brand-violet text-white shadow-lg shadow-brand-violet/20'
-                                        : 'bg-brand-blue/5 text-brand-blue/40 hover:bg-brand-blue/10'
+                                    ? 'bg-brand-violet text-white shadow-lg shadow-brand-violet/20'
+                                    : 'bg-brand-blue/5 text-brand-blue/40 hover:bg-brand-blue/10'
                                     }`}
                             >
                                 {type}

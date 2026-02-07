@@ -65,7 +65,9 @@ const Dashboard = () => {
             .select(`
                 *,
                 profiles:author_id (first_name, father_name),
-                organizations:org_id (full_name)
+                organizations:org_id (full_name),
+                jobs (*),
+                events (*)
             `)
             .order('created_at', { ascending: false });
 
@@ -200,9 +202,28 @@ const Dashboard = () => {
                                             </p>
                                         )}
 
-                                        {post.post_type !== 'normal' && (
-                                            <div className="inline-flex items-center px-4 py-1.5 bg-brand-violet/5 text-brand-violet rounded-full text-xs font-black uppercase tracking-widest border border-brand-violet/10">
-                                                {post.post_type}
+                                        {post.post_type === 'job' && post.jobs && (
+                                            <div className="grid grid-cols-2 gap-4 p-4 bg-brand-blue/5 rounded-2xl border border-brand-blue/10">
+                                                <div>
+                                                    <p className="text-[10px] uppercase font-black text-brand-blue/40 tracking-widest">Payment</p>
+                                                    <p className="font-bold text-brand-blue">{post.jobs.payment_amount} ETB</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-[10px] uppercase font-black text-brand-blue/40 tracking-widest">Needed</p>
+                                                    <p className="font-bold text-brand-blue">{post.jobs.workers_needed} Workers</p>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {post.post_type === 'event' && post.events && (
+                                            <div className="p-4 bg-brand-violet/5 rounded-2xl border border-brand-violet/10 flex items-center justify-between">
+                                                <div>
+                                                    <p className="text-[10px] uppercase font-black text-brand-violet/60 tracking-widest">Date & Time</p>
+                                                    <p className="font-bold text-brand-blue">{new Date(post.events.start_time).toLocaleString()}</p>
+                                                </div>
+                                                <div className="px-4 py-1.5 bg-brand-violet text-white rounded-xl text-xs font-black uppercase tracking-widest">
+                                                    {post.events.entry_requirement}
+                                                </div>
                                             </div>
                                         )}
                                     </div>

@@ -72,7 +72,12 @@ const Signup = () => {
                 password: formData.password,
             });
 
-            if (authError) throw authError;
+            if (authError) {
+                if (authError.message.includes("User already registered")) {
+                    throw new Error("This account is already registered. Please login instead.");
+                }
+                throw authError;
+            }
 
             // 2. Create Profile in profiles table
             const { error: profileError } = await supabase

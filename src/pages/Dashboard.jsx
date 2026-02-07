@@ -39,11 +39,16 @@ const Dashboard = () => {
                 }
 
                 // 2. Fetch user profile
-                const { data: profile } = await supabase
+                const { data: profile, error: profileError } = await supabase
                     .from('profiles')
                     .select('*')
                     .eq('id', session.user.id)
-                    .single();
+                    .maybeSingle();
+
+                if (profileError) {
+                    console.error("Error fetching profile:", profileError);
+                }
+
                 setUser(profile);
 
                 // 3. Fetch posts

@@ -52,8 +52,9 @@ const Signup = () => {
 
     const handleSignup = async (e) => {
         e.preventDefault();
-        // Implementation for Supabase signup...
+        console.log("Signup button clicked!");
         console.log("Signup data:", formData);
+        // Implementation for Supabase signup...
     };
 
     const InfoTooltip = ({ text }) => (
@@ -86,6 +87,7 @@ const Signup = () => {
                             <Input
                                 label="1.1.1.1 Your Name"
                                 name="firstName"
+                                value={formData.firstName}
                                 required
                                 placeholder="Enter your name"
                                 onChange={handleInputChange}
@@ -93,6 +95,7 @@ const Signup = () => {
                             <Input
                                 label="1.1.1.2 Father Name"
                                 name="fatherName"
+                                value={formData.fatherName}
                                 required
                                 placeholder="Father's name"
                                 onChange={handleInputChange}
@@ -100,6 +103,7 @@ const Signup = () => {
                             <Input
                                 label="1.1.1.3 Grand Father Name"
                                 name="grandFatherName"
+                                value={formData.grandFatherName}
                                 required
                                 placeholder="Grandfather's name"
                                 onChange={handleInputChange}
@@ -110,6 +114,7 @@ const Signup = () => {
                             <Input
                                 label="1.1.1.4 Mobile Number"
                                 name="mobileNumber"
+                                value={formData.mobileNumber}
                                 required
                                 placeholder="+251 ..."
                                 onChange={handleInputChange}
@@ -117,6 +122,7 @@ const Signup = () => {
                             <Input
                                 label="1.1.1.5 Email Address (Optional)"
                                 name="emailAddress"
+                                value={formData.emailAddress}
                                 type="email"
                                 placeholder="you@example.com"
                                 onChange={handleInputChange}
@@ -135,6 +141,7 @@ const Signup = () => {
                                             type="radio"
                                             name="gender"
                                             value={g}
+                                            checked={formData.gender === g}
                                             className="w-4 h-4 text-brand-violet accent-brand-violet"
                                             onChange={handleInputChange}
                                         />
@@ -147,6 +154,7 @@ const Signup = () => {
                         <Input
                             label="1.3 Birth Date"
                             name="birthDate"
+                            value={formData.birthDate}
                             type="date"
                             required
                             onChange={handleInputChange}
@@ -165,6 +173,7 @@ const Signup = () => {
                             <Select
                                 label="1.4.1.1 Region"
                                 name="region"
+                                value={formData.region}
                                 required
                                 options={[
                                     { label: 'Addis Ababa', value: 'addis_ababa' },
@@ -178,13 +187,14 @@ const Signup = () => {
                             <Select
                                 label="1.4.1.2 Zone"
                                 name="zone"
+                                value={formData.zone}
                                 required
                                 options={[{ label: 'Select Zone', value: 'test' }]}
                                 onChange={handleInputChange}
                             />
-                            <Input label="1.4.1.3 Woreda (Optional)" name="woreda" onChange={handleInputChange} />
-                            <Input label="1.4.1.4 Kebele (Optional)" name="kebele" onChange={handleInputChange} />
-                            <Input label="1.4.1.5 Village (Optional)" name="village" onChange={handleInputChange} />
+                            <Input label="1.4.1.3 Woreda (Optional)" name="woreda" value={formData.woreda} onChange={handleInputChange} />
+                            <Input label="1.4.1.4 Kebele (Optional)" name="kebele" value={formData.kebele} onChange={handleInputChange} />
+                            <Input label="1.4.1.5 Village (Optional)" name="village" value={formData.village} onChange={handleInputChange} />
                         </div>
                     </section>
 
@@ -198,6 +208,7 @@ const Signup = () => {
                         <Select
                             label="Level"
                             name="education"
+                            value={formData.education}
                             options={[
                                 { label: 'Elementary: 1-8', value: 'elementary' },
                                 { label: 'High School: 9-10', value: 'high_school' },
@@ -221,6 +232,7 @@ const Signup = () => {
                             <Input
                                 label="1.11 Password"
                                 name="password"
+                                value={formData.password}
                                 type="password"
                                 required
                                 onChange={handleInputChange}
@@ -228,6 +240,7 @@ const Signup = () => {
                             <Input
                                 label="1.12 Again Password"
                                 name="confirmPassword"
+                                value={formData.confirmPassword}
                                 type="password"
                                 required
                                 onChange={handleInputChange}
@@ -235,7 +248,6 @@ const Signup = () => {
                         </div>
                     </section>
 
-                    {/* 1.13 Signup Button */}
                     <Button type="submit" className="w-full text-xl py-4">
                         1.13 Signup Button
                     </Button>

@@ -34,6 +34,12 @@ const OrganizationRegistration = () => {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
+    const handleRegister = (e) => {
+        e.preventDefault();
+        console.log("Register button clicked!");
+        console.log("Organization Registration data:", formData);
+    };
+
     return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4">
             <div className="max-w-4xl w-full bg-white rounded-3xl shadow-2xl overflow-hidden border border-brand-blue/5">
@@ -42,7 +48,7 @@ const OrganizationRegistration = () => {
                     <p className="mt-2 text-white/80 font-medium">Verify your organization and start connecting</p>
                 </div>
 
-                <form className="p-10 space-y-10">
+                <form onSubmit={handleRegister} className="p-10 space-y-10">
                     {/* 2.1 & 2.2 Profile Basics */}
                     <section className="space-y-6">
                         <div className="flex items-center space-x-2 border-b-2 border-brand-blue/5 pb-2">
@@ -53,12 +59,14 @@ const OrganizationRegistration = () => {
                             <Input
                                 label="2.1 Organization Full Name"
                                 name="fullName"
+                                value={formData.fullName}
                                 required
                                 onChange={handleInputChange}
                             />
                             <Input
                                 label="2.2 Managed By (User Phone/Email)"
                                 name="manager"
+                                value={formData.manager}
                                 required
                                 placeholder="Search or add manager..."
                                 onChange={handleInputChange}
@@ -76,6 +84,7 @@ const OrganizationRegistration = () => {
                             <Select
                                 label="Organization Type"
                                 name="orgType"
+                                value={formData.orgType}
                                 options={[
                                     { label: 'Business', value: 'business' },
                                     { label: 'Non-business', value: 'non_business' },
@@ -86,6 +95,7 @@ const OrganizationRegistration = () => {
                                 <Select
                                     label="2.3.1.1.1 Business Type"
                                     name="businessType"
+                                    value={formData.businessType}
                                     options={[
                                         { label: 'Sole Proprietorship', value: 'sole' },
                                         { label: 'PLC', value: 'plc' },
@@ -98,8 +108,8 @@ const OrganizationRegistration = () => {
                         </div>
                         {formData.orgType === 'business' && (
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <Input label="2.3.1.1.3.1 TIN Number" name="tinNumber" onChange={handleInputChange} />
-                                <Input label="2.3.1.1.4.1 Date Established" type="date" name="establishedDate" onChange={handleInputChange} />
+                                <Input label="2.3.1.1.3.1 TIN Number" name="tinNumber" value={formData.tinNumber} onChange={handleInputChange} />
+                                <Input label="2.3.1.1.4.1 Date Established" type="date" name="establishedDate" value={formData.establishedDate} onChange={handleInputChange} />
                             </div>
                         )}
                     </section>
@@ -111,12 +121,12 @@ const OrganizationRegistration = () => {
                             <h3 className="text-lg font-bold text-brand-blue uppercase tracking-wide">2.4 Address (Required)</h3>
                         </div>
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                            <Input label="2.4.1.1 Region" name="region" required onChange={handleInputChange} />
-                            <Input label="2.4.1.2 Zone" name="zone" required onChange={handleInputChange} />
-                            <Input label="2.4.1.3 Woreda" name="woreda" required onChange={handleInputChange} />
-                            <Input label="2.4.1.4 Kebele" name="kebele" required onChange={handleInputChange} />
-                            <Input label="2.4.1.5 Sefer" name="sefer" required onChange={handleInputChange} />
-                            <Input label="2.4.1.6 Building" name="building" required onChange={handleInputChange} />
+                            <Input label="2.4.1.1 Region" name="region" value={formData.region} required onChange={handleInputChange} />
+                            <Input label="2.4.1.2 Zone" name="zone" value={formData.zone} required onChange={handleInputChange} />
+                            <Input label="2.4.1.3 Woreda" name="woreda" value={formData.woreda} required onChange={handleInputChange} />
+                            <Input label="2.4.1.4 Kebele" name="kebele" value={formData.kebele} required onChange={handleInputChange} />
+                            <Input label="2.4.1.5 Sefer" name="sefer" value={formData.sefer} required onChange={handleInputChange} />
+                            <Input label="2.4.1.6 Building" name="building" value={formData.building} required onChange={handleInputChange} />
                         </div>
                     </section>
 
@@ -127,8 +137,8 @@ const OrganizationRegistration = () => {
                             <h3 className="text-lg font-bold text-brand-blue uppercase tracking-wide">2.5 Contacts</h3>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <Input label="2.5.1.2 Phone" name="phone" required placeholder="+251 ..." onChange={handleInputChange} />
-                            <Input label="2.5.1.3 Email" name="email" type="email" placeholder="org@email.com" onChange={handleInputChange} />
+                            <Input label="2.5.1.2 Phone" name="phone" value={formData.phone} required placeholder="+251 ..." onChange={handleInputChange} />
+                            <Input label="2.5.1.3 Email" name="email" value={formData.email} type="email" placeholder="org@email.com" onChange={handleInputChange} />
                         </div>
                     </section>
 
@@ -140,6 +150,7 @@ const OrganizationRegistration = () => {
                         </div>
                         <textarea
                             name="about"
+                            value={formData.about}
                             maxLength={5000}
                             placeholder="Tell us about the organization (max 5000 characters)"
                             className="w-full h-32 px-4 py-3 border-2 border-brand-blue/10 rounded-xl focus:border-brand-violet outline-none transition-all text-brand-blue"

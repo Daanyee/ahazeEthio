@@ -18,6 +18,7 @@ const Login = () => {
 
     const handleLogin = async (e) => {
         e.preventDefault();
+        console.log("Login button clicked!");
         console.log("Login data:", formData);
     };
 
@@ -34,6 +35,7 @@ const Login = () => {
                         <Input
                             label="4.1 Mobile Number or Email"
                             name="identifier"
+                            value={formData.identifier}
                             required
                             placeholder="e.g. +251... or name@email.com"
                             onChange={handleInputChange}
@@ -41,6 +43,7 @@ const Login = () => {
                         <Input
                             label="4.2 Password"
                             name="password"
+                            value={formData.password}
                             type="password"
                             required
                             placeholder="••••••••"
